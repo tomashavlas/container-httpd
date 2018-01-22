@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source "${CONTAINER_ENTRYPOINT_PATH}/libce.sh"
+
+set -o errexit
+
+ce_generate_passwd 48 0
+
+fix-permissions "${HOME}"
+fix-permissions "${HTTPD_CONF_PATH}"
+fix-permissions "${HTTPD_CONFD_PATH}"
+fix-permissions "${HTTPD_DEFAULTD_PATH}"
+fix-permissions "${HTTPD_LOCK_PATH}"
+fix-permissions "${HTTPD_LOG_PATH}"
+fix-permissions "${HTTPD_MODULESD_PATH}"
+fix-permissions "${HTTPD_RUN_PATH}"
+fix-permissions "${CONTAINER_ENTRYPOINT_PATH}/httpd/pre-init.d"
+fix-permissions "${CONTAINER_PASSWD_PATH}"

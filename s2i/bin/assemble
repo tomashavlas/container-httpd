@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source "${CONTAINER_ENTRYPOINT_PATH}/httpd/libhttpd.sh"
+
+set -o errexit
+
+cp --force --recursive /tmp/src/. ./
+
+if [ -d ./.httpd ]; then
+    httpd_process_config_files ./.httpd
+    httpd_process_hook_files ./.httpd
+    rm --force --recursive ./.httpd
+fi
+
+fix-permissions ./

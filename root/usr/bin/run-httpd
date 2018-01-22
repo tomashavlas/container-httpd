@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source "${CONTAINER_ENTRYPOINT_PATH}/libce.sh"
+source "${CONTAINER_ENTRYPOINT_PATH}/httpd/libhttpd.sh"
+
+set -o errexit
+shopt -s nullglob
+
+if [ -v HTTPD_LOG_TO_VOLUME ] && [ "${HTTPD_LOG_TO_VOLUME}" == "1" ]; then
+    httpd_config_log_to_volume
+fi
+
+ce_source_hooks "${CONTAINER_ENTRYPOINT_PATH}/httpd/pre-init.d"
+
+exec httpd -DFOREGROUND

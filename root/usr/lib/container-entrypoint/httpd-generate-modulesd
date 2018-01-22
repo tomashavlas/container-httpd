@@ -1,0 +1,16 @@
+#!/bin/bash
+
+function httpd_generate_modulesd() {
+    local dir="$1"; shift
+
+    mkdir -p "${HTTPD_CONF_PATH}/modules.available.d/"
+    fix-permissions "${HTTPD_CONF_PATH}/modules.available.d/"
+
+    local module name
+    for module in $( find "${dir}" -iname '*.so' ); do
+        name="$( basename "${module}" )"; name="${name#mod_}"; name="${name%.so}"
+        echo "LoadModule ${name}_module ${module}" > "${HTTPD_CONF_PATH}/modules.available.d/${name}.load"
+    done
+}
+
+httpd_generate_modulesd /usr/lib/httpd/modules
