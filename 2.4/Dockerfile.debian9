@@ -75,9 +75,9 @@ RUN apt-get update \
         echo '    iconsdir:         ${datadir}/icons'; \
         echo '    includedir:       ${exec_prefix}/include/httpd'; \
         echo '    infodir:          ${exec_prefix}/share/info'; \
-        echo '    installbuilddir:  ${libdir}/httpd/build'; \
+        echo '    installbuilddir:  ${exec_prefix}/lib/httpd/build'; \
         echo '    libdir:           ${exec_prefix}/lib'; \
-        echo '    libexecdir:       ${libdir}/httpd/modules'; \
+        echo '    libexecdir:       ${exec_prefix}/lib/httpd/modules'; \
         echo "    localstatedir:    \${prefix}${HTTPD_LOCK_PATH}"; \
         echo "    logfiledir:       \${prefix}${HTTPD_LOG_PATH}"; \
         echo '    mandir:           ${exec_prefix}/share/man'; \
@@ -92,6 +92,7 @@ RUN apt-get update \
         --enable-layout=Container \
         --enable-mods-shared=realyall \
         --enable-mpms-shared=all \
+        --enable-so \
  && make --jobs=$( nproc ) \
  && make --jobs=$( nproc ) install \
  && install --directory --group=0 --mode=0770 --owner=48 \
@@ -107,7 +108,6 @@ RUN apt-get update \
         "${HTTPD_CONF_PATH}/original" \
         "${HTTPD_SOURCE}" \
         "${HTTPD_TARBALL}" \
-        /usr/lib/httpd/build \
         /usr/share/httpd/manual \
         /usr/share/man/* \
  \
