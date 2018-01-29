@@ -64,4 +64,4 @@ Credits
 -------
 
 This project is derived from [`httpd-container`](https://github.com/sclorg/httpd-container) by
-[SoftwareCollections.org](https://www.softwarecollections.org).
+[SoftwareCollections.org](https://www.softwarecollections.org), and official [Apache HTTPd](https://hub.docker.com/_/httpd/) Docker image.
