@@ -1,5 +1,5 @@
-Apache 2.4 HTTP server container image
-======================================
+Apache 2.4 HTTPd server container image
+=======================================
 
 This container image includes Apache HTTPd server version 2.4 based on Debian.
 
@@ -12,15 +12,15 @@ Description
 
 [Apache HTTPd](https://httpd.apache.org) is a powerful, efficient, and extensible web server.
 
-This container image provides containerized packaging of Apache HTTPd 2.24 daemon.
-This image can be used as a base image for other applications based on Apache HTTPd 2.24, 
+This container image provides containerized packaging of Apache HTTPd 2.4 daemon.
+This image can be used as a base image for other applications based on Apache HTTPd 2.4, 
 image can be extended using [source-to-image](https://github.com/openshift/source-to-image) tool.
 
 
 Usage
 -----
 
-This image can be used as a base image for other applications based on Apache HTTP server.
+This image can be used as a base image for other applications based on Apache HTTPd server.
 
 This will create container named `httpd` running Apache HTTPd, serving data from `/wwwdata` directory.
 Port `8080` will be exposed and mapped to the host.
@@ -93,7 +93,7 @@ Apache HTTPd server log directory, used only when `HTTPD_LOG_TO_VOLUME` is set t
 Troubleshooting
 ---------------
 
-The Apache HTTP daemon in the container logs to the standard output by default, so the logs are available in container log.
+The Apache HTTPd daemon in the container logs to the standard output by default, so the logs are available in container log.
 The log can be examined by running:
 
 ```

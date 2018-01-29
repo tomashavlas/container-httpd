@@ -7,7 +7,7 @@ function httpd_generate_modulesd() {
     fix-permissions "${HTTPD_CONF_PATH}/modules.available.d/"
 
     local module name
-    for module in $( find "${dir}" -iname '*.so' ); do
+    for module in $( find "${dir}" -iname 'mod_*.so' ); do
         name="$( basename "${module}" )"; name="${name#mod_}"; name="${name%.so}"
         echo "LoadModule ${name}_module ${module}" > "${HTTPD_CONF_PATH}/modules.available.d/${name}.load"
     done

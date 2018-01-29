@@ -1,7 +1,0 @@
-#!/bin/bash
-
-source "${CONTAINER_ENTRYPOINT_PATH}/httpd/libhttpd.sh"
-
-for module in "$@"; do
-    httpd_module_enable "${module}"
-done

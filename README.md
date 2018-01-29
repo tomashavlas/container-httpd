@@ -1,5 +1,5 @@
-Apache HTTP server container image
-==================================
+Apache HTTPd server container image
+===================================
 
 [![Build Stauts](https://api.travis-ci.org/tomashavlas/container-httpd.svg?branch=master)](https://travis-ci.org/tomashavlas/container-httpd/)
 

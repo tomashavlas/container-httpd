@@ -1,0 +1,54 @@
+#!/bin/bash
+
+set -o errexit
+
+function usage() {
+    cat >&2 <<EOHELP
+
+Usage:  $0 CONFIGURE-FLAGS
+
+Configure Apache HTTPd source with provided flags.
+EOHELP
+
+    exit 1
+}
+
+if [ $# -eq 0 ] || [ $# -eq 1 -a "--help" == "${1:-}" ]; then
+    usage
+fi
+
+pushd "${HTTPD_SOURCE}"
+
+{ \
+    echo; \
+    echo '# Container'; \
+    echo '<Layout Container>'; \
+    echo '    prefix:           '; \
+    echo '    exec_prefix:      /usr'; \
+    echo '    bindir:           ${exec_prefix}/bin'; \
+    echo '    cgidir:           ${datadir}/cgi-bin'; \
+    echo '    datadir:          ${exec_prefix}/share/httpd'; \
+    echo '    errordir:         ${datadir}/error'; \
+    echo '    htdocsdir:        ${datadir}/htdocs'; \
+    echo '    iconsdir:         ${datadir}/icons'; \
+    echo '    includedir:       ${exec_prefix}/include/httpd'; \
+    echo '    infodir:          ${exec_prefix}/share/info'; \
+    echo '    installbuilddir:  ${exec_prefix}/lib/httpd/build'; \
+    echo '    libdir:           ${exec_prefix}/lib'; \
+    echo '    libexecdir:       ${exec_prefix}/lib/httpd/modules'; \
+    echo "    localstatedir:    \${prefix}${HTTPD_LOCK_PATH}"; \
+    echo "    logfiledir:       \${prefix}${HTTPD_LOG_PATH}"; \
+    echo '    mandir:           ${exec_prefix}/share/man'; \
+    echo '    manualdir:        ${datadir}/manual'; \
+    echo '    proxycachedir:    ${prefix}/var/cache/httpd/proxy'; \
+    echo "    runtimedir:       \${prefix}${HTTPD_RUN_PATH}"; \
+    echo '    sbindir:          ${exec_prefix}/sbin'; \
+    echo "    sysconfdir:       \${prefix}${HTTPD_CONF_PATH}"; \
+    echo '</Layout>'; \
+} >> config.layout
+
+./configure \
+    --enable-layout=Container \
+    "$@"
+
+popd

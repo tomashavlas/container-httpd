@@ -5,14 +5,14 @@ EXPOSE 8080 \
 
 ENV HTTPD_VERSION=2.4 \
     HTTPD_RELEASE=2.4.29 \
-    HTTPD_CHECKSUM=948e4a11278a5954698b880b30f401b1e9ab743713ee2c7280a54dd4ddd87085 \
+    HTTPD_CHECKSUM=777753a5a25568a2a27428b2214980564bc1c38c1abf9ccc7630b639991f7f00 \
     HTTPD_SOURCE=/usr/src/httpd \
-    HTTPD_TARBALL=/usr/src/httpd-2.4.29.tar.gz \
+    HTTPD_TARBALL=/usr/src/httpd-2.4.29.tar.bz2 \
     HOME=/srv/www
 
 LABEL name="tomashavlas/httpd" \
       version="${HTTPD_VERSION}" \
-      release="1" \
+      release="${HTTPD_RELEASE}" \
       maintaner="Tomáš Havlas <tomas@havlas.me>" \
       vendor="Tomáš Havlas" \
       io.openshift.s2i.scripts-url=image:///usr/lib/s2i
@@ -28,93 +28,47 @@ ENV HTTPD_CONF_PATH=/etc/httpd \
 RUN useradd --home-dir /usr/share/httpd --gid 0 --shell /usr/sbin/nologin --system --uid 48 apache \
     \
  && apt-get update \
- && RUNTIME_DEPS=" \
-        gettext-base \
-        libnss-wrapper \
-        libapr1 \
-        libaprutil1 \
-        libpcre++0v5 \
-        libssl1.0.2 \
-        zlib1g " \
- && apt-get install --yes --no-install-recommends --verbose-versions ${RUNTIME_DEPS} \
- && rm --recursive /var/lib/apt/lists/*
-
-RUN apt-get update \
  && BUILD_DEPS=" \
-        ca-certificates \
         gcc \
         libapr1-dev \
         libaprutil1-dev \
         libpcre++-dev \
         libssl1.0-dev \
         make \
-        wget \
         zlib1g-dev " \
+ && RUNTIME_DEPS=" \
+        bzip2 \
+        gettext-base \
+        libapr1 \
+        libaprutil1 \
+        libnss-wrapper \
+        libpcre++0v5 \
+        libssl1.0.2 \
+        zlib1g " \
+ && apt-get install --yes --no-install-recommends --verbose-versions ${BUILD_DEPS} ${RUNTIME_DEPS} \
+ \
+ && rm --recursive /var/lib/apt/lists/*
+
+RUN apt-get update \
+ && BUILD_DEPS=" \
+        ca-certificates \
+        wget " \
  && apt-get install --yes --no-install-recommends --verbose-versions ${BUILD_DEPS} \
  \
- && wget -O "${HTTPD_TARBALL}" "https://www.apache.org/dyn/closer.cgi?action=download&filename=httpd/httpd-${HTTPD_RELEASE}.tar.gz" \
+ && wget -O "${HTTPD_TARBALL}" "https://www.apache.org/dyn/closer.cgi?action=download&filename=httpd/httpd-${HTTPD_RELEASE}.tar.bz2" \
  && echo "${HTTPD_CHECKSUM} *${HTTPD_TARBALL}" | sha256sum --check - \
  \
- && mkdir -p "${HTTPD_SOURCE}" \
- && tar --extract --gzip --strip-components=1 \
-        --directory="${HTTPD_SOURCE}" \
-        --file="${HTTPD_TARBALL}" \
- \
- && cd "${HTTPD_SOURCE}" \
- && { \
-        echo; \
-        echo '# Container'; \
-        echo '<Layout Container>'; \
-        echo '    prefix:           '; \
-        echo '    exec_prefix:      /usr'; \
-        echo '    bindir:           ${exec_prefix}/bin'; \
-        echo '    cgidir:           ${datadir}/cgi-bin'; \
-        echo '    datadir:          ${exec_prefix}/share/httpd'; \
-        echo '    errordir:         ${datadir}/error'; \
-        echo '    htdocsdir:        ${datadir}/htdocs'; \
-        echo '    iconsdir:         ${datadir}/icons'; \
-        echo '    includedir:       ${exec_prefix}/include/httpd'; \
-        echo '    infodir:          ${exec_prefix}/share/info'; \
-        echo '    installbuilddir:  ${exec_prefix}/lib/httpd/build'; \
-        echo '    libdir:           ${exec_prefix}/lib'; \
-        echo '    libexecdir:       ${exec_prefix}/lib/httpd/modules'; \
-        echo "    localstatedir:    \${prefix}${HTTPD_LOCK_PATH}"; \
-        echo "    logfiledir:       \${prefix}${HTTPD_LOG_PATH}"; \
-        echo '    mandir:           ${exec_prefix}/share/man'; \
-        echo '    manualdir:        ${datadir}/manual'; \
-        echo '    proxycachedir:    ${prefix}/var/cache/httpd/proxy'; \
-        echo "    runtimedir:       \${prefix}${HTTPD_RUN_PATH}"; \
-        echo '    sbindir:          ${exec_prefix}/sbin'; \
-        echo "    sysconfdir:       \${prefix}${HTTPD_CONF_PATH}"; \
-        echo '</Layout>'; \
- } >> config.layout \
- && ./configure \
-        --enable-layout=Container \
-        --enable-mods-shared=realyall \
+ && apt-get purge --yes --auto-remove ${BUILD_DEPS} \
+ && rm --recursive /var/lib/apt/lists/*
+
+COPY [ "./root/usr/bin/docker-httpd-*", "/usr/bin/" ]
+
+RUN docker-httpd-source extract \
+ && docker-httpd-install \
+        --enable-mods-shared=all \
         --enable-mpms-shared=all \
         --enable-so \
- && make --jobs=$( nproc ) \
- && make --jobs=$( nproc ) install \
- && install --directory --group=0 --mode=0770 --owner=48 \
-        "${HOME}" \
-        "${HTTPD_CONFD_PATH}" \
-        "${HTTPD_DEFAULTD_PATH}" \
-        "${HTTPD_LOCK_PATH}" \
-        "${HTTPD_LOG_PATH}" \
-        "${HTTPD_MODULESD_PATH}" \
-        "${HTTPD_RUN_PATH}" \
- && cd / \
- && rm --recursive \
-        "${HTTPD_CONF_PATH}/original" \
-        "${HTTPD_SOURCE}" \
-        "${HTTPD_TARBALL}" \
-        /usr/share/httpd/manual \
-        /usr/share/man/* \
- \
- && apt-get purge --yes --auto-remove ${BUILD_DEPS} \
- && rm --recursive /var/lib/apt/lists/* \
- \
- && test "$( id apache )" = "uid=48(apache) gid=0(root) groups=0(root)"
+ && docker-httpd-source delete
 
 ENV CONTAINER_ENTRYPOINT_PATH=/usr/share/container-entrypoint \
     CONTAINER_PASSWD_PATH="${HTTPD_CONF_PATH}/passwd" \
@@ -124,7 +78,7 @@ COPY [ "./s2i/bin", "${S2I_BIN_PATH}/" ]
 COPY [ "./common/root", "./root", "./${HTTPD_VERSION}/root", "/" ]
 RUN /usr/lib/container-entrypoint/httpd-setup \
  && /usr/lib/container-entrypoint/httpd-generate-modulesd \
- && docker-httpd-module-enable \
+ && docker-httpd-module enable \
         auth_basic \
         authn_core \
         authn_file \
@@ -133,7 +87,8 @@ RUN /usr/lib/container-entrypoint/httpd-setup \
         authz_user \
         mime \
         mpm_prefork \
-        unixd
+        unixd \
+ && test "$( id apache )" = "uid=48(apache) gid=0(root) groups=0(root)"
 
 USER 48
 

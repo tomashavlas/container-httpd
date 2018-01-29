@@ -1,0 +1,40 @@
+#!/bin/bash
+
+source "${CONTAINER_ENTRYPOINT_PATH}/httpd/libhttpd.sh"
+
+set -o errexit
+
+function usage() {
+    cat >&2 <<EOHELP
+
+Usage:  $0 COMMAND MODULE
+
+Manage Apache HTTPd modules.
+
+Commands:
+  disable  disable specified Apache HTTPd module
+  enable   enable specified Apache HTTPd module
+EOHELP
+
+    exit 1
+}
+
+case "$1" in
+    disable)
+        shift
+		for module in "$@"; do
+            httpd_module_disable "${module}"
+        done
+		;;
+
+	enable)
+		shift
+		for module in "$@"; do
+            httpd_module_enable "${module}"
+        done
+		;;
+
+	*)
+		usage
+		;;
+esac

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -o errexit
+
+function usage() {
+    cat >&2 <<EOHELP
+
+Usage:  $0 COMMAND
+
+Manage Apache HTTPd source tarball lifecycle.
+
+Commands:
+  delete   delete extracted Apache HTTPd source located in ${HTTPD_SOURCE}
+  extract  extract Apache HTTPd source tarball into directory ${HTTPD_SOURCE}
+EOHELP
+
+    exit 1
+}
+
+case "$1" in
+    delete)
+		rm --force --recursive "${HTTPD_SOURCE}"
+		;;
+
+	extract)
+		if [ ! -f "${HTTPD_SOURCE}/.docker-extracted" ]; then
+		    mkdir -p "${HTTPD_SOURCE}"
+			tar --extract --bzip2 --strip-components=1 \
+			    --directory="${HTTPD_SOURCE}" \
+                --file="${HTTPD_TARBALL}"
+			touch "${HTTPD_SOURCE}/.docker-extracted"
+		fi
+		;;
+
+	*)
+		usage
+		;;
+esac

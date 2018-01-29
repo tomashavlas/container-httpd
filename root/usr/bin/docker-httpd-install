@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -o errexit
+
+function usage() {
+    cat >&2 <<EOHELP
+
+Usage:  $0 [CONFIGURE-FLAGS]
+
+Build and install Apache HTTPd from source.
+EOHELP
+
+    exit 1
+}
+
+if [ $# -eq 1 -a "--help" == "${1:-}" ]; then
+    usage
+fi
+
+if [ $# -gt 0 ]; then
+    docker-httpd-configure "$@"
+fi
+
+pushd "${HTTPD_SOURCE}"
+
+make --jobs=$( nproc )
+make --jobs=$( nproc ) install
+make --jobs=$( nproc ) clean
+rm --recursive \
+    "${HTTPD_CONF_PATH}/original" \
+    /usr/share/httpd/manual \
+    /usr/share/man/*
+
+popd
+
+install --directory --group=0 --mode=0770 --owner=48 \
+    "${HOME}" \
+    "${HTTPD_CONFD_PATH}" \
+    "${HTTPD_DEFAULTD_PATH}" \
+    "${HTTPD_LOCK_PATH}" \
+    "${HTTPD_LOG_PATH}" \
+    "${HTTPD_MODULESD_PATH}" \
+    "${HTTPD_RUN_PATH}" \
