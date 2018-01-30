@@ -77,7 +77,7 @@ ENV CONTAINER_ENTRYPOINT_PATH=/usr/share/container-entrypoint \
 COPY [ "./s2i/bin", "${S2I_BIN_PATH}/" ]
 COPY [ "./common/root", "./root", "./${HTTPD_VERSION}/root", "/" ]
 RUN /usr/lib/container-entrypoint/httpd-setup \
- && /usr/lib/container-entrypoint/httpd-generate-modulesd \
+ && /usr/lib/container-entrypoint/httpd-generate-modules_available_d \
  && docker-httpd-module enable \
         auth_basic \
         authn_core \

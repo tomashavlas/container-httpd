@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function httpd_generate_modulesd() {
+function httpd_generate_modules_available_d() {
     local dir="$1"; shift
 
     mkdir -p "${HTTPD_CONF_PATH}/modules.available.d/"
@@ -13,4 +13,4 @@ function httpd_generate_modulesd() {
     done
 }
 
-httpd_generate_modulesd /usr/lib/httpd/modules
+httpd_generate_modules_available_d /usr/lib/httpd/modules
