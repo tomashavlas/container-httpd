@@ -19,20 +19,20 @@ EOHELP
 
 case "$1" in
     delete)
-		rm --force --recursive "${HTTPD_SOURCE}"
-		;;
+        rm --force --recursive "${HTTPD_SOURCE}"
+        ;;
 
-	extract)
-		if [ ! -f "${HTTPD_SOURCE}/.docker-extracted" ]; then
-		    mkdir -p "${HTTPD_SOURCE}"
-			tar --extract --bzip2 --strip-components=1 \
-			    --directory="${HTTPD_SOURCE}" \
+    extract)
+        if [ ! -f "${HTTPD_SOURCE}/.docker-extracted" ]; then
+            mkdir -p "${HTTPD_SOURCE}"
+            tar --extract --bzip2 --strip-components=1 \
+                --directory="${HTTPD_SOURCE}" \
                 --file="${HTTPD_TARBALL}"
-			touch "${HTTPD_SOURCE}/.docker-extracted"
-		fi
-		;;
+            touch "${HTTPD_SOURCE}/.docker-extracted"
+        fi
+        ;;
 
-	*)
-		usage
-		;;
+    *)
+        usage
+        ;;
 esac

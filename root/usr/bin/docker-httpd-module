@@ -22,19 +22,19 @@ EOHELP
 case "$1" in
     disable)
         shift
-		for module in "$@"; do
+        for module in "$@"; do
             httpd_module_disable "${module}"
         done
-		;;
+        ;;
 
-	enable)
-		shift
-		for module in "$@"; do
+    enable)
+        shift
+        for module in "$@"; do
             httpd_module_enable "${module}"
         done
-		;;
+        ;;
 
-	*)
-		usage
-		;;
+    *)
+        usage
+        ;;
 esac
