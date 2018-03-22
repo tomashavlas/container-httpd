@@ -23,10 +23,14 @@ function httpd_module_enable() {
     local module="$1"; shift
 
     if [ -f "${HTTPD_MODULESD_PATH}/../modules.available.d/${module}.load" ]; then
-        ln --symbolic "../modules.available.d/${module}.load" "${HTTPD_MODULESD_PATH}/${module}.load"
+        if [ ! -f "${HTTPD_MODULESD_PATH}/${module}.load" ]; then
+            ln --symbolic "../modules.available.d/${module}.load" "${HTTPD_MODULESD_PATH}/${module}.load"
+        fi
 
         if [ -f "${HTTPD_MODULESD_PATH}/../modules.available.d/${module}.conf" ]; then
-            ln --symbolic "../modules.available.d/${module}.conf" "${HTTPD_MODULESD_PATH}/${module}.conf"
+            if [ ! -f "${HTTPD_MODULESD_PATH}/${module}.conf" ]; then
+                ln --symbolic "../modules.available.d/${module}.conf" "${HTTPD_MODULESD_PATH}/${module}.conf"
+            fi
         fi
     fi
 }
