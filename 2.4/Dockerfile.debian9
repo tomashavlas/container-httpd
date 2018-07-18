@@ -4,10 +4,10 @@ EXPOSE 8080 \
        8443
 
 ENV HTTPD_VERSION=2.4 \
-    HTTPD_RELEASE=2.4.29 \
-    HTTPD_CHECKSUM=777753a5a25568a2a27428b2214980564bc1c38c1abf9ccc7630b639991f7f00 \
+    HTTPD_RELEASE=2.4.34 \
+    HTTPD_CHECKSUM=fa53c95631febb08a9de41fd2864cfff815cf62d9306723ab0d4b8d7aa1638f0 \
     HTTPD_SOURCE=/usr/src/httpd \
-    HTTPD_TARBALL=/usr/src/httpd-2.4.29.tar.bz2 \
+    HTTPD_TARBALL=/usr/src/httpd-2.4.34.tar.bz2 \
     HOME=/srv/www
 
 LABEL name="tomashavlas/httpd" \
